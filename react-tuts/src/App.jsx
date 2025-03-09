@@ -4,6 +4,7 @@ import BrandLogo from "./components/BrandLogo";
 import PreLoader from './components/PreLoader';
 import MovieCard from './components/MovieCard';
 import { useDebounce } from 'react-use';
+import { updateSearchCount, getTrendingMovies } from './appwrite';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -22,6 +23,7 @@ const App = () => {
   let [hasInclAdult, refineHasInclAdult] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [moviesList, setMoviesList] = useState([]);
+  const [trendingMoviesList, setTrendingMoviesList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debounceSearchTerm, setDebounceSearchTerm] = useState('');
 
@@ -54,6 +56,10 @@ const App = () => {
         return;
       }
       setMoviesList(data.results || []);
+
+      if(query && data.results.length > 0){
+        await updateSearchCount(query, data.results[0]);
+      }
     }catch(error){
       console.error(`Error in fetching movies: ${error}`);
       setErrorMessage('Error in fetching movies');
@@ -62,11 +68,24 @@ const App = () => {
     }
   }
 
+  const fetchTrendingMovies = async () => {
+    try{
+      const movies = await getTrendingMovies();
+      setTrendingMoviesList(movies);
+    }catch(err){
+      console.error(`Error in fetching trending movies ${err}`);
+    }
+  }
+
   useDebounce( () => setDebounceSearchTerm(searchTerm), 500, [searchTerm]);
 
   useEffect(()=>{
     fetchMovies(debounceSearchTerm, hasInclAdult);
   },[debounceSearchTerm, hasInclAdult]);
+
+  useEffect(()=>{
+    fetchTrendingMovies();
+  },[]);
 
   let brandImg = 'mr-logo.svg';
   let brandWidth = 200;
@@ -96,9 +115,20 @@ const App = () => {
             refineHasInclAdult={refineHasInclAdult} 
           />
         </header>
-        
-        <main className='all-movies'>
-          <h2 className='mt-[50px]'>
+        <section className="trending">
+          <ul>
+            {
+              trendingMoviesList.map((movie,index) => (
+                <li key={movie.$id}>
+                  <p>{ index + 1 }</p>
+                  <img src={movie.poster_url} alt={movie.title} />
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+        <section className='all-movies'>
+          <h2>
             {
               searchTerm ? `Search results for: " ${searchTerm} " ` : 'All Movies'
             }
@@ -114,7 +144,7 @@ const App = () => {
               ))}
             </ul>
           )}
-        </main>
+        </section>
       </div>
     </main>
   )
