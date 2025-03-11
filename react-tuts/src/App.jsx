@@ -3,6 +3,7 @@ import Search from "./components/Search";
 import BrandLogo from "./components/BrandLogo";
 import PreLoader from './components/PreLoader';
 import MovieCard from './components/MovieCard';
+import ReducerEg from './components/ReducerEg';
 import { useDebounce } from 'react-use';
 import { updateSearchCount, getTrendingMovies } from './appwrite';
 
@@ -84,7 +85,7 @@ const App = () => {
   },[debounceSearchTerm, hasInclAdult]);
 
   useEffect(()=>{
-    fetchTrendingMovies();
+    //fetchTrendingMovies();
   },[]);
 
   let brandImg = 'mr-logo.svg';
@@ -107,7 +108,7 @@ const App = () => {
           <h1>
           Find <span className="text-gradient">Movies</span> You'll Enjoy Without the Hassle
           </h1>
-          
+          <ReducerEg/>
           <Search 
             searchTerm={searchTerm} 
             setSearchTerm={setSearchTerm} 

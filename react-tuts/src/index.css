@@ -53,6 +53,13 @@
   header img {
     @apply w-full max-w-lg h-auto object-contain mx-auto drop-shadow-md;
   }
+  button{
+      padding: 8px 4px;
+      border: 2px solid #c0c0c0;
+      background: silver;
+      color: black;
+      margin: 2px;
+  }
 }
 
 @layer components {
